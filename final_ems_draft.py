@@ -101,14 +101,13 @@ class Event(BaseObject):   # defining event class and inheriting from base class
         print("\nEvent details updated.")
 
 # delete event method
-    def delete(self):
-        print(f"\nEvent {self.event_no}: {self.event_name} deleted.")
-        global events, attendees
-        if self.event_no in events:
-            del events[self.event_no]
-            attendees_to_delete = [attendee_no for attendee_no, attendee in attendees.items() if attendee.event_no == self.event_no]
+    def delete(self, event_no):
+        if event_no in events:  # Check if event exists in events dictionary
+            del events[event_no]  # Delete the event
+            print(f"Event {event_no}: {self.event_name} deleted.")
+            attendees_to_delete = [attendee_no for attendee_no, attendee in attendees.items() if attendee.event_no == event_no]
             for attendee_no in attendees_to_delete:
-                del attendees[attendee_no]               
+                del attendees[attendee_no]              
         else:
             print("Event not found.")
 
@@ -341,7 +340,7 @@ def main():
         elif user_input == '1':
             load_data_from_files() # calling load data function 
             while True: 
-                event_listing = input("\nSelect an option: \n[1] All Events  \n[2] Event")
+                event_listing = input("\nSelect an option: \n[1] All Events  \n[2] Event\n")
                 if event_listing.lower() == 'all' or event_listing.lower() == 'all events' or event_listing == '1':
                     list_all_events() # calling list all events function 
                     break
@@ -365,7 +364,7 @@ def main():
         elif user_input == '3':
             load_data_from_files() # calling load data function 
             while True:
-                user_choice = input("\nSelect an option: \n[1] Create an event \n[2] Edit an event \n[3] Delete an event")
+                user_choice = input("\nSelect an option: \n[1] Create an event \n[2] Edit an event \n[3] Delete an event\n")
                 if user_choice.lower() == 'create' or user_choice == '1':
                     try: # try / except block for value error for the num_events prompt
                         num_events = int(input("\nEnter the number of events to create: ")) # user input to create a number of events 
@@ -376,7 +375,6 @@ def main():
                     except ValueError:
                         print("Invalid input. Please provide valid inputs for event creation.")
                 elif user_choice.lower() == 'edit' or user_choice == '2':
-                        try:  # try / except block to handle any user errors or if event no is correct
                             event_no = input("\nEnter Event No. to edit: ")
                             event = events.get(event_no)
                             if not event:
@@ -385,26 +383,21 @@ def main():
                                 event.edit()
                                 save_data_to_files() # calling save data function 
                                 break
-                        except ValueError:
-                            print("Event not found. Please enter a valid Event No.")
                 elif user_choice.lower() == 'delete' or user_choice == '3':
-                    try: # try / except block for type error for event_no
-                        event_no = input("\nEnter Event No. to delete: ")
-                        event = events[event_no]
-                        if event:
-                            event.delete() # calling event delete method
-                            save_data_to_files() # calling save data function 
-                            break  
-                        else:
-                            print("Event not found.")
-                    except TypeError:
-                        print("Invalid input. Please enter a valid Event No.")
+                    event_no = input("\nEnter Event No. to delete: ")
+                    event = events.get(event_no)
+                    if event:
+                        event.delete(event_no) # calling event delete method
+                        save_data_to_files() # calling save data function 
+                        break  
+                    else:
+                        print("\nEvent not found.")
                 else:
                     print("Invalid choice.")
 
         elif user_input == '4':
             load_data_from_files() # load data function 
-            user_edit = input("\nSelect an option: \n[1] Add an attendee  \n[2] Delete an attendee \n[3] Edit an attendee")
+            user_edit = input("\nSelect an option: \n[1] Add an attendee  \n[2] Delete an attendee \n[3] Edit an attendee\n")
             if user_edit.lower() == 'add' or user_edit == '1':
                 list_all_events()  # call list all events function so user knows which events are available
                 while True:

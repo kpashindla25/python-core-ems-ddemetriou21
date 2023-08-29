@@ -55,10 +55,10 @@ class Event(BaseObject):   # defining event class and inheriting from base class
         print(f"\nEditing Event No.: {self.event_no}, Event Name: {self.event_name}, Event Date: {self.event_date}, Event Venue: {self.event_venue[0]}, Venue Capacity: {self.event_venue[1]}, Venue Location: {self.event_venue[2]}")
         edit_choice = input("What would you like to edit? \n- Name \n- Date \n- Venue \n- All\n").lower() # user input for edit selection 
         if edit_choice == 'venue':
-            self.edit_venue()
+            self.edit_venue()  # calling edit_venue method
         elif edit_choice in {'name', 'date', 'all'}:
-            if edit_choice == 'all':
-                self.edit_details()
+            if edit_choice == 'all':  
+                self.edit_details()  # calling edit_details method
             elif edit_choice == 'date':
                 while True:
                     try: # try / except block to handle incorrect date format / user inputs

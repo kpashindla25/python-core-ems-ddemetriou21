@@ -359,7 +359,8 @@ def main():
                     list_attendees(event_no) # list attendees function with event no. as argument 
                     break 
                 else:
-                    print("\nEvent not found. Please enter a valid event number.")
+                    print("\nEvent not found.")
+                    break
                                    
         elif user_input == '3':
             load_data_from_files() # calling load data function 

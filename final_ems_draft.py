@@ -53,7 +53,7 @@ class Event(BaseObject):   # defining event class and inheriting from base class
 #edit event method
     def edit(self):
         print(f"\nEditing Event No.: {self.event_no}, Event Name: {self.event_name}, Event Date: {self.event_date}, Event Venue: {self.event_venue[0]}, Venue Capacity: {self.event_venue[1]}, Venue Location: {self.event_venue[2]}")
-        edit_choice = input("\nWhat would you like to edit?\n \n[1] Name \n[2] Date \n[3] Venue \n[4] All\n").lower() # user input for edit selection 
+        edit_choice = input("\nWhat would you like to edit? \n[1] Name \n[2] Date \n[3] Venue \n[4] All\n").lower() # user input for edit selection 
         if edit_choice == 'name' or edit_choice =='1':
             self.event_name = input(f"\nUpdating event name from ({self.event_name}) to: ")
         elif edit_choice == 'date' or edit_choice == '2':
@@ -183,8 +183,8 @@ class Attendee(BaseObject):  # attendee class with base class inheritance
 
 # edit attendee method altering specific or all details
     def edit(self):
-        print(f"\nEditing Attendee No. {self.attendee_no}, Name: {self.name} for Event {self.event_no}:")
-        edit_choice = input("\nWhat would you like to edit?\n \n[1] Name \n[2] Phone \n[3] Email \n[4] Event \n[5] All\n").lower()   
+        print(f"\nEditing Attendee No. {self.attendee_no}, Name: {self.name} for Event {self.event_no}")
+        edit_choice = input("\nWhat would you like to edit? \n[1] Name \n[2] Phone \n[3] Email \n[4] Event \n[5] All\n").lower()   
         if edit_choice == 'name' or edit_choice == '1':
             self.name = input(f"\nUpdating attendee name from ({self.name}) to: ")
         elif edit_choice == 'phone' or edit_choice == '2':
@@ -198,8 +198,12 @@ class Attendee(BaseObject):  # attendee class with base class inheritance
         elif edit_choice == 'email' or edit_choice == '3':
             self.email = input(f"\nUpdating email from ({self.email}) to: ")            
         elif edit_choice == 'event' or edit_choice == '4':
-            self.event_no = input(f"\nUpdating event no from ({self.event_no}) to: ")
-            print(f"\nAttendee moved to Event {self.event_no}.")
+            new_event_no = input(f"\nEnter new event no: ")
+            if new_event_no in events:
+                self.event_no = new_event_no
+                print(f"\nAttendee moved to Event {self.event_no}.")
+            else:
+                print(f"Event {new_event_no} not found.")
         elif edit_choice == 'all' or edit_choice == '5':  
             self.name = input(f"\nUpdating attendee name from ({self.name}) to: ")
             while True:
@@ -208,9 +212,14 @@ class Attendee(BaseObject):  # attendee class with base class inheritance
                     break  
                 except ValueError:
                     print("Invalid input. Please enter a valid phone number.")
-                self.email = input(f"\nUpdating email from ({self.email}) to: ")
-                self.event_no = input(f"\nUpdating event no from ({self.event_no}) to: ")
-                print("\nAttendee details updated.")
+            self.email = input(f"\nUpdating email from ({self.email}) to: ")
+            new_event_no = input(f"\nEnter new event no: ")
+            if new_event_no in events:
+                self.event_no = new_event_no
+                print(f"\nAttendee moved to Event {self.event_no}.")
+            else:
+                print(f"Event {new_event_no} not found.")
+            print("\nAttendee details updated.")
         else:
             print("Invalid option.")
 
@@ -250,8 +259,6 @@ def list_attendees(event_no):
                 attendees_found = True
         if not attendees_found:
             print("\nNo attendees found for event.")
-    else:
-        print("\nEvent not found.")
 
 # function listing all events using for loop to iterate through relevant dictionary
 def list_all_events():
@@ -415,6 +422,7 @@ def main():
                         for x in range(num_attendees):  # for loop to create a number of attendees based of user input 
                             Attendee.create(event_no)  # create attendee method with event no. as argument 
                             save_data_to_files() # save data function 
+                        break
             elif user_edit.lower() == 'delete' or user_edit == '2': 
                 attendee_no = input("\nEnter Attendee No. you wish to delete: ")
                 attendee = attendees.get(attendee_no) # getting attendee no. from attendee dictionary 

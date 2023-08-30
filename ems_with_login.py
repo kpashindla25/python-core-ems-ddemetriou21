@@ -184,8 +184,8 @@ class Attendee(BaseObject):  # attendee class with base class inheritance
 
 # edit attendee method altering specific or all details
     def edit(self):
-        print(f"\nEditing Attendee No. {self.attendee_no}, Name: {self.name} for Event {self.event_no}:")
-        edit_choice = input("\nWhat would you like to edit?\n \n[1] Name \n[2] Phone \n[3] Email \n[4] Event \n[5] All\n").lower()   
+        print(f"\nEditing Attendee No. {self.attendee_no}, Name: {self.name} for Event {self.event_no}")
+        edit_choice = input("\nWhat would you like to edit? \n[1] Name \n[2] Phone \n[3] Email \n[4] Event \n[5] All\n").lower()   
         if edit_choice == 'name' or edit_choice == '1':
             self.name = input(f"\nUpdating attendee name from ({self.name}) to: ")
         elif edit_choice == 'phone' or edit_choice == '2':
@@ -199,8 +199,12 @@ class Attendee(BaseObject):  # attendee class with base class inheritance
         elif edit_choice == 'email' or edit_choice == '3':
             self.email = input(f"\nUpdating email from ({self.email}) to: ")            
         elif edit_choice == 'event' or edit_choice == '4':
-            self.event_no = input(f"\nUpdating event no from ({self.event_no}) to: ")
-            print(f"\nAttendee moved to Event {self.event_no}.")
+            new_event_no = input(f"\nEnter new event no: ")
+            if new_event_no in events:
+                self.event_no = new_event_no
+                print(f"\nAttendee moved to Event {self.event_no}.")
+            else:
+                print(f"Event {new_event_no} not found.")
         elif edit_choice == 'all' or edit_choice == '5':  
             self.name = input(f"\nUpdating attendee name from ({self.name}) to: ")
             while True:
@@ -209,11 +213,17 @@ class Attendee(BaseObject):  # attendee class with base class inheritance
                     break  
                 except ValueError:
                     print("Invalid input. Please enter a valid phone number.")
-                self.email = input(f"\nUpdating email from ({self.email}) to: ")
-                self.event_no = input(f"\nUpdating event no from ({self.event_no}) to: ")
-                print("\nAttendee details updated.")
+            self.email = input(f"\nUpdating email from ({self.email}) to: ")
+            new_event_no = input(f"\nEnter new event no: ")
+            if new_event_no in events:
+                self.event_no = new_event_no
+                print(f"\nAttendee moved to Event {self.event_no}.")
+            else:
+                print(f"Event {new_event_no} not found.")
+            print("\nAttendee details updated.")
         else:
             print("Invalid option.")
+
 
 # delete attendee method
     def delete(self):
@@ -390,17 +400,20 @@ def serialize_event(obj):
     raise TypeError("Object of type Event is not JSON serializable")
 
 def main_menu():
-    while True:
+    while True: # while loop ensuring the program keeps running till user exits the system
         print("\n---------------------------\n| Event Management System |\n---------------------------")
-        print("\nPlease select one of the following options: \n[1] List Events \n[2] List Attendees \n[3] Customize Events \n[4] Customize Attendees \n[5] Logout")
+        print("\nPlease select one of the following options: \n[1] List Events \n[2] List Attendees \n[3] Customize Events \n[4] Customize Atteendees \n[5] Logout")
         user_input = input("\n")
+
         # if / elif statements based on user input 
         if user_input == '5' or user_input.lower() == 'logout':
+            print('\nLogging out of the EMS.')
             break
+
         elif user_input == '1':
             load_data_from_files() # calling load data function 
             while True: 
-                event_listing = input("\nSelect an option: \n[1] All Events  \n[2] Event \n")
+                event_listing = input("\nSelect an option: \n[1] All Events  \n[2] Event\n")
                 if event_listing.lower() == 'all' or event_listing.lower() == 'all events' or event_listing == '1':
                     list_all_events() # calling list all events function 
                     break
@@ -419,13 +432,13 @@ def main_menu():
                     list_attendees(event_no) # list attendees function with event no. as argument 
                     break 
                 else:
-                    print("\nEvent not found. Please enter a valid event number.")
+                    print("\nEvent not found.")
                     break
-                                        
+                                   
         elif user_input == '3':
             load_data_from_files() # calling load data function 
             while True:
-                user_choice = input("\nSelect an option:\n \n[1] Create an event \n[2] Edit an event \n[3] Delete an event\n")
+                user_choice = input("\nSelect an option: \n[1] Create an event \n[2] Edit an event \n[3] Delete an event\n")
                 if user_choice.lower() == 'create' or user_choice == '1':
                     try: # try / except block for value error for the num_events prompt
                         num_events = int(input("\nEnter the number of events to create: ")) # user input to create a number of events 
@@ -436,7 +449,6 @@ def main_menu():
                     except ValueError:
                         print("Invalid input. Please provide valid inputs for event creation.")
                 elif user_choice.lower() == 'edit' or user_choice == '2':
-                        try:  # try / except block to handle any user errors or if event no is correct
                             event_no = input("\nEnter Event No. to edit: ")
                             event = events.get(event_no)
                             if not event:
@@ -445,32 +457,28 @@ def main_menu():
                                 event.edit()
                                 save_data_to_files() # calling save data function 
                                 break
-                        except ValueError:
-                            print("Event not found. Please enter a valid Event No.")
                 elif user_choice.lower() == 'delete' or user_choice == '3':
-                    try: # try / except block for type error for event_no
-                        event_no = input("\nEnter Event No. to delete: ")
-                        event = events.get(event_no)
-                        if event:
-                            event.delete() # calling event delete method
-                            save_data_to_files() # calling save data function 
-                            break  
-                        else:
-                            print("Event not found.")
-                    except TypeError:
-                        print("Invalid input. Please enter a valid Event No.")
+                    event_no = input("\nEnter Event No. to delete: ")
+                    event = events.get(event_no)
+                    if event:
+                        event.delete(event_no) # calling event delete method
+                        save_data_to_files() # calling save data function 
+                        break  
+                    else:
+                        print("\nEvent not found.")
                 else:
                     print("Invalid choice.")
 
         elif user_input == '4':
             load_data_from_files() # load data function 
-            user_edit = input("\nSelect an option:\n \n[1] Add an attendee  \n[2] Delete an attendee \n[3] Edit an attendee\n")
+            user_edit = input("\nSelect an option: \n[1] Add an attendee  \n[2] Delete an attendee \n[3] Edit an attendee\n")
             if user_edit.lower() == 'add' or user_edit == '1':
                 list_all_events()  # call list all events function so user knows which events are available
                 while True:
                     event_no = input("\nEnter Event No. to add attendee: ")
                     if event_no not in events:
                         print("\nEvent not found.")
+                        break
                     else:
                         while True:
                             try: # try / except block for value error on num_attendees
@@ -481,6 +489,7 @@ def main_menu():
                         for x in range(num_attendees):  # for loop to create a number of attendees based of user input 
                             Attendee.create(event_no)  # create attendee method with event no. as argument 
                             save_data_to_files() # save data function 
+                        break
             elif user_edit.lower() == 'delete' or user_edit == '2': 
                 attendee_no = input("\nEnter Attendee No. you wish to delete: ")
                 attendee = attendees.get(attendee_no) # getting attendee no. from attendee dictionary 
@@ -497,9 +506,9 @@ def main_menu():
                     save_data_to_files() # save data function 
                 else:
                     print("\nAttendee not found.")
-                    
-            else:
-                print("\nInvalid choice.")
+            
+        else:
+            print("\nInvalid choice.")
   
 # main function for the entire system
 def main():
